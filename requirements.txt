@@ -1,0 +1,14 @@
+pandas>=1.5.0                   # Data manipulation
+numpy>=1.21.0                   # Numerical operations
+matplotlib>=3.5.0               # Plotting
+seaborn>=0.11.2                 # Advanced visualization
+scikit-learn>=1.1.0             # ML models + preprocessing
+imbalanced-learn>=0.10.0        # SMOTE / resampling
+openpyxl>=3.0.10                # Excel reading
+jupyterlab>=3.4.0               # Notebook interface
+tensorflow>=2.11.0              # MLP modeling
+keras>=2.11.0                   # MLP modeling
+joblib>=1.1.0                   # Model serialization
+fastapi>=0.92.0                 # API service
+uvicorn[standard]>=0.20.0       # FastAPI server
+

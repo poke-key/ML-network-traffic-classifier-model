@@ -1,0 +1,20 @@
+# OS metadata
+.DS_Store
+
+# Jupyter notebook autosaves
+.ipynb_checkpoints/
+
+# Large or sensitive data
+data/*.csv
+data/*.zip
+data/*.xlsx
+!data/sample_network_data.xlsx
+
+# Ignore model binaries
+models/*
+!models/.gitkeep
+
+
+#  Python Cache
+__pycache__/
+*.pyc
