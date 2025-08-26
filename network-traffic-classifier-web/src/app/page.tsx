@@ -172,38 +172,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* NUBROAD Header */}
-      <header className="bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 relative z-50">
-        {/* Drop shadow effect */}
-        <div className="absolute inset-0 shadow-lg" style={{
-          boxShadow: '0px 12px 48px 12px rgba(0, 0, 0, 0.1)'
-        }}></div>
-        
-        <div className="max-w-7xl mx-auto px-4 relative">
-          <div className="flex items-center justify-between h-24">
-            {/* Logo and Brand */}
-            <div className="flex items-center">
-              <div className="flex items-center space-x-4">
-                <div className="header-title-logo">
-                  <a href="/" className="block">
-                    <img 
-                      src="/nubroad-logo.jpg" 
-                      alt="NUBROAD" 
-                      className="w-16 h-16 object-contain"
-                      style={{ display: 'block' }}
-                    />
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Theme Toggle */}
-            <div className="flex items-center space-x-2">
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Theme Toggle - Positioned in top right */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
