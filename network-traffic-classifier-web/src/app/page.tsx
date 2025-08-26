@@ -225,28 +225,11 @@ export default function Home() {
               Sample Data Loaded
             </CardTitle>
             <CardDescription>
-              Sample network traffic data is preloaded for demonstration. You can also upload your own CSV file.
+              Sample network traffic data is preloaded for demonstration purposes.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {!file ? (
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-                <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-lg font-medium mb-2">Drag and drop file here</p>
-                <p className="text-sm text-muted-foreground mb-4">Limit 200MB per file • CSV format</p>
-                <Button asChild>
-                  <label className="cursor-pointer">
-                    Browse files
-                    <input
-                      type="file"
-                      accept=".csv"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                    />
-                  </label>
-                </Button>
-              </div>
-            ) : (
+            {file && (
               <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
                 <div className="flex items-center space-x-3">
                   <FileText className="h-5 w-5 text-primary" />
@@ -257,10 +240,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="h-5 w-5 text-green-500" />
-                  <span className="text-sm text-green-600">File successfully loaded</span>
-                  <Button variant="ghost" size="sm" onClick={removeFile}>
-                    <X className="h-4 w-4" />
-                  </Button>
+                  <span className="text-sm text-green-600">Sample data loaded</span>
                 </div>
               </div>
             )}
