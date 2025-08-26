@@ -61,8 +61,16 @@
 @layer base {
   * {
     @apply border-border;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
   body {
     @apply bg-background text-foreground;
+    zoom: 1.75; /* 175% zoom by default */
+    transform-origin: top left;
+  }
+  html {
+    overflow-x: hidden;
   }
 } 

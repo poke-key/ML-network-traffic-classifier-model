@@ -129,19 +129,32 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                <Network className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold">Network Traffic Classifier</h1>
-                <p className="text-sm text-muted-foreground">ML-powered traffic analysis</p>
+      {/* NUBROAD Header */}
+      <header className="bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 relative z-50">
+        {/* Drop shadow effect */}
+        <div className="absolute inset-0 shadow-lg" style={{
+          boxShadow: '0px 12px 48px 12px rgba(0, 0, 0, 0.1)'
+        }}></div>
+        
+        <div className="max-w-7xl mx-auto px-4 relative">
+          <div className="flex items-center justify-between h-24">
+            {/* Logo and Brand */}
+            <div className="flex items-center">
+              <div className="flex items-center space-x-4">
+                <div className="header-title-logo">
+                  <a href="/" className="block">
+                    <img 
+                      src="/nubroad-logo.jpg" 
+                      alt="NUBROAD" 
+                      className="w-16 h-16 object-contain"
+                      style={{ display: 'block' }}
+                    />
+                  </a>
+                </div>
               </div>
             </div>
+
+            {/* Theme Toggle */}
             <div className="flex items-center space-x-2">
               <ThemeToggle />
             </div>
@@ -150,7 +163,7 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 space-y-8">
+      <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
         {/* Hero Section */}
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-bold tracking-tight">
