@@ -319,6 +319,7 @@ export default function Home() {
                         <Progress 
                           value={(category.count / maxCount) * 100} 
                           className="h-2"
+                          color={categoryColors[category.category] || undefined}
                         />
                         <p className="text-xs text-muted-foreground">
                           {((category.count / totalPredictions) * 100).toFixed(1)}% of total
