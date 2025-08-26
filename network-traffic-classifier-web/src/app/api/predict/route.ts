@@ -3,7 +3,7 @@ import { writeFile } from 'fs/promises';
 import { join } from 'path';
 import { spawn } from 'child_process';
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<Response> {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     // Call the Python script for predictions
     console.log('Calling Python script with file:', tempPath);
     
-    return new Promise((resolve, reject) => {
+    const response: Response = await new Promise<Response>((resolve) => {
       const pythonProcess = spawn('python', ['predict.py', tempPath]);
       
       let result = '';
@@ -97,6 +97,8 @@ export async function POST(request: NextRequest) {
         }
       });
     });
+
+    return response;
 
   } catch (error) {
     console.error('Prediction error:', error);
