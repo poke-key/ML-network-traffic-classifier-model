@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Papa from 'papaparse';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Upload, FileText, X, CheckCircle, Network, BarChart3, FileSpreadsheet } from 'lucide-react';
 
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -30,6 +30,15 @@ const labelMap: { [key: number]: string } = {
   2: "DNS",
   3: "Web",
   4: "Other"
+};
+
+// Color mapping for each traffic category - visible in both light and dark themes
+const categoryColors: { [key: string]: string } = {
+  "Streaming": "#3B82F6", // Blue
+  "Secure": "#10B981",    // Green
+  "DNS": "#F59E0B",       // Amber
+  "Web": "#EF4444",       // Red
+  "Other": "#8B5CF6"      // Purple
 };
 
 export default function Home() {
@@ -392,7 +401,30 @@ export default function Home() {
                             color: 'hsl(var(--foreground))'
                           }}
                         />
-                        <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                        
+                        {/* Custom Legend */}
+                        <div className="flex flex-wrap justify-center gap-4 mt-4">
+                          {Object.entries(categoryColors).map(([category, color]) => (
+                            <div key={category} className="flex items-center gap-2">
+                              <div 
+                                className="w-4 h-4 rounded"
+                                style={{ backgroundColor: color }}
+                              />
+                              <span className="text-sm text-muted-foreground">{category}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <Bar 
+                          dataKey="count" 
+                          radius={[4, 4, 0, 0]}
+                        >
+                          {categoryCounts.map((category, index) => (
+                            <Cell 
+                              key={category.category}
+                              fill={categoryColors[category.category] || "#6B7280"}
+                            />
+                          ))}
+                        </Bar>
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
