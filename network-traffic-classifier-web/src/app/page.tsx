@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Upload, FileText, X, CheckCircle, Network, BarChart3, FileSpreadsheet } from 'lucide-react';
@@ -62,7 +62,7 @@ export default function Home() {
     }
   };
 
-  const generatePredictions = async (inputData: any[]) => {
+  const generatePredictions = async (inputData?: any[]) => {
     if (!file) return;
     
     setIsLoading(true);
@@ -108,6 +108,35 @@ export default function Home() {
     }
   };
 
+  const loadSampleData = async () => {
+    try {
+      console.log('Loading sample data...');
+      const response = await fetch('/sample_data.csv');
+      const csvText = await response.text();
+      
+      // Create a virtual file object
+      const sampleFile = new File([csvText], 'sample_data.csv', { type: 'text/csv' });
+      setFile(sampleFile);
+      
+      // Parse the CSV data using the File object
+      Papa.parse(sampleFile, {
+        header: true,
+        complete: (results) => {
+          setData(results.data as any[]);
+          // Now that we have the file set, we can generate predictions
+          setTimeout(() => generatePredictions(), 100);
+        },
+        error: (error) => {
+          setError('Error parsing sample CSV file');
+          console.error('Sample CSV parsing error:', error);
+        }
+      });
+    } catch (error) {
+      console.error('Error loading sample data:', error);
+      setError('Failed to load sample data');
+    }
+  };
+
   const removeFile = () => {
     setFile(null);
     setData([]);
@@ -126,6 +155,11 @@ export default function Home() {
 
   const totalPredictions = predictions.length;
   const maxCount = categoryCounts.length > 0 ? Math.max(...categoryCounts.map(c => c.count)) : 0;
+
+  // Load sample data automatically when component mounts
+  useEffect(() => {
+    loadSampleData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -167,10 +201,10 @@ export default function Home() {
         {/* Hero Section */}
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-bold tracking-tight">
-            Upload a CSV file with flow-level features to predict traffic categories
+            Network Traffic Classification with Sample Data
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Our machine learning model analyzes network flow data to classify traffic into categories like Streaming, Web, DNS, and Secure connections.
+            Sample network traffic data is preloaded for immediate analysis. Our machine learning model classifies traffic into categories like Streaming, Web, DNS, and Secure connections.
           </p>
         </div>
 
@@ -179,10 +213,10 @@ export default function Home() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileSpreadsheet className="h-5 w-5" />
-              Choose a CSV file
+              Sample Data Loaded
             </CardTitle>
             <CardDescription>
-              Upload your network flow data in CSV format for analysis
+              Sample network traffic data is preloaded for demonstration. You can also upload your own CSV file.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
