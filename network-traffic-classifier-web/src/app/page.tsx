@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Upload, FileText, X, CheckCircle, Network, BarChart3, FileSpreadsheet } from 'lucide-react';
@@ -39,6 +39,48 @@ export default function Home() {
   const [categoryCounts, setCategoryCounts] = useState<CategoryCount[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Auto-load sample data on component mount
+  useEffect(() => {
+    const loadSampleData = async () => {
+      try {
+        console.log('Loading sample data automatically...');
+        
+        // Fetch the sample CSV file
+        const response = await fetch('/sample_input_from_x_test.csv');
+        if (!response.ok) {
+          throw new Error('Failed to fetch sample data');
+        }
+        
+        const csvText = await response.text();
+        
+        // Parse the CSV data
+        Papa.parse(csvText, {
+          header: true,
+          complete: (results) => {
+            console.log('Sample data loaded:', results.data);
+            setData(results.data as any[]);
+            
+            // Create a mock file object for display
+            const mockFile = new File([csvText], 'sample_input_from_x_test.csv', { type: 'text/csv' });
+            setFile(mockFile);
+            
+            // Automatically generate predictions
+            generatePredictions(results.data as any[]);
+          },
+          error: (error: any) => {
+            setError('Error loading sample data');
+            console.error('Error parsing sample CSV:', error);
+          }
+        });
+      } catch (err) {
+        console.error('Error loading sample data:', err);
+        setError('Failed to load sample data');
+      }
+    };
+
+    loadSampleData();
+  }, []);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
