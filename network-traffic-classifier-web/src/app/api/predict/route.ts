@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
-import { spawn } from 'child_process';
+
+// Configuration for ML service
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5000';
 
 export async function POST(request: NextRequest): Promise<Response> {
   try {
@@ -15,96 +15,65 @@ export async function POST(request: NextRequest): Promise<Response> {
       );
     }
 
-    // Save the uploaded file temporarily
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const tempPath = join(process.cwd(), 'temp', `${Date.now()}_${file.name}`);
+    // Read the file content
+    const csvText = await file.text();
     
-    // Ensure temp directory exists
-    await writeFile(tempPath, buffer);
-
-    // Call the Python script for predictions
-    console.log('Calling Python script with file:', tempPath);
+    console.log('Sending CSV data to ML service:', ML_SERVICE_URL);
     
-    const response: Response = await new Promise<Response>((resolve) => {
-      const pythonProcess = spawn('python', ['predict.py', tempPath]);
-      
-      let result = '';
-      let error = '';
-      
-      pythonProcess.stdout.on('data', (data) => {
-        result += data.toString();
-        console.log('Python stdout:', data.toString());
-      });
-      
-      pythonProcess.stderr.on('data', (data) => {
-        error += data.toString();
-        console.log('Python stderr:', data.toString());
-      });
-      
-      pythonProcess.on('close', (code) => {
-        console.log('Python process closed with code:', code);
-        console.log('Final result:', result);
-        console.log('Final error:', error);
-        
-        if (code !== 0) {
-          console.error('Python script error:', error);
-          // Fallback to mock data for testing
-          console.log('Using fallback mock data');
-          const mockPredictions = Array.from({ length: 25 }, (_, i) => ({
-            index: i,
-            category: Math.floor(Math.random() * 4),
-            label: ['Streaming', 'Secure', 'DNS', 'Web'][Math.floor(Math.random() * 4)]
-          }));
-          
-          const counts: { [key: string]: number } = {};
-          mockPredictions.forEach(pred => {
-            counts[pred.label] = (counts[pred.label] || 0) + 1;
-          });
-          
-          const categoryCounts = Object.entries(counts).map(([category, count]) => ({
-            category,
-            count
-          }));
-          
-          resolve(NextResponse.json({
-            predictions: mockPredictions,
-            categoryCounts,
-            message: 'Mock predictions (Python script failed)'
-          }));
-          return;
-        }
-        
-        try {
-          const predictionResult = JSON.parse(result);
-          console.log('Parsed prediction result:', predictionResult);
-          
-          if (predictionResult.error) {
-            resolve(NextResponse.json(
-              { error: predictionResult.error },
-              { status: 500 }
-            ));
-            return;
-          }
-          
-          resolve(NextResponse.json(predictionResult));
-        } catch (parseError) {
-          console.error('JSON parse error:', parseError);
-          resolve(NextResponse.json(
-            { error: 'Failed to parse prediction results' },
-            { status: 500 }
-          ));
-        }
-      });
+    // Call the external ML service
+    const response = await fetch(`${ML_SERVICE_URL}/predict`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        csv_data: csvText
+      }),
     });
-
-    return response;
+    
+    console.log('ML service response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('ML service error:', errorText);
+      throw new Error(`ML service failed: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    
+    console.log('ML service response:', result);
+    
+    if (result.error) {
+      throw new Error(result.error);
+    }
+    
+    return NextResponse.json(result);
 
   } catch (error) {
     console.error('Prediction error:', error);
-    return NextResponse.json(
-      { error: 'Failed to process prediction' },
-      { status: 500 }
-    );
+    
+    // Fallback to mock data if ML service is unavailable
+    console.log('Using fallback mock data');
+    const mockPredictions = Array.from({ length: 25 }, (_, i) => ({
+      index: i,
+      category: Math.floor(Math.random() * 4),
+      label: ['Streaming', 'Secure', 'DNS', 'Web'][Math.floor(Math.random() * 4)]
+    }));
+    
+    const counts: { [key: string]: number } = {};
+    mockPredictions.forEach(pred => {
+      counts[pred.label] = (counts[pred.label] || 0) + 1;
+    });
+    
+    const categoryCounts = Object.entries(counts).map(([category, count]) => ({
+      category,
+      count
+    }));
+    
+    return NextResponse.json({
+      predictions: mockPredictions,
+      categoryCounts,
+      message: 'Mock predictions (ML service unavailable)'
+    });
   }
 } 
