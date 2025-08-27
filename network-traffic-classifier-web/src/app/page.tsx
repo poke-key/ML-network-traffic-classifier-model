@@ -5,7 +5,7 @@ import Papa from 'papaparse';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Upload, FileText, X, CheckCircle, Network, BarChart3, FileSpreadsheet } from 'lucide-react';
 
-
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -172,7 +172,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-
+      {/* Theme Toggle - Positioned in top right */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
